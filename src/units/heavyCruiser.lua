@@ -15,15 +15,15 @@ function heavyCruiser:new(...)
 	o.maxPower = 1000
 	o.reactorHealth = 1000
 	
-	o.maxHealth = 2000
+	o.maxHealth = 15000
 	o.landingUnit = tank
 	o.landingQuantity = 2
 	
 	o.bridgeHealth = 5000
 	o.bridgeMaxHealth = 5000
 	--engineStuff
-	o.engineForce = 1000
-	o.thrusterForce = 300
+	o.engineForce = 750
+	o.thrusterForce = 150
 	o.engineHealth = 700
 	--o.engineEnd = 93 - 97/2
 	--o.engineStart = 87 - 97/2
@@ -53,7 +53,7 @@ function heavyCruiser:new(...)
 	o.shieldsActive = true
 
 	o.shieldRegen = 500
-	o.maxShields = 150000
+	o.maxShields = 22000
 	o.shieldCycleTime = 4
 	
 	--ai stuff

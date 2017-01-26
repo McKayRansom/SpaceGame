@@ -4,7 +4,7 @@ function lightCruiser:new(...)
 	--assert(id, "no spaceShip id for light Cruiser creation") 
 	local o = {}
 	--generalStuffs
-	o.image = love.graphics.newImage("images/units/testShipOutline.png")
+	o.image = love.graphics.newImage("images/units/spaceShips/testShipOutline.png")
 	-- o.otherImage = lightCruiserImageOther
 	o.height =91
 	o.width =91
@@ -15,14 +15,14 @@ function lightCruiser:new(...)
 	o.maxPower = 1000
 	o.reactorHealth = 1000
 	
-	o.health = 2000
+	o.maxHealth = 10000
 	
 	o.bridgeHealth = 5000
 	o.bridgeMaxHealth = 5000
 	--engineStuff
-	o.engineForce = 3000
-	o.thrusterForce = 1000
-	o.engineHealth = 700
+	o.engineForce = 1500
+	o.thrusterForce = 200
+	o.engineMaxHealth = 700
 	--o.engineEnd = 93 - 97/2
 	--o.engineStart = 87 - 97/2
 	o.engineY = 36
@@ -52,7 +52,7 @@ function lightCruiser:new(...)
 	o.shieldsActive = true
 
 	o.shieldRegen = 200
-	o.shields = 80000
+	o.maxShields = 20000
 	o.shieldCycleTime = 4
 	
 	--ai stuff

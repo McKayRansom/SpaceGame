@@ -11,7 +11,7 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 		if self.shape then
 			self.physicsShape = love.physics.newPolygonShape(unpack(self.shape))
 		else
-			self.physicsShape = love.physics.newRectangleShape(self.collisionHeight, self.collisionWidth)
+			self.physicsShape = love.physics.newRectangleShape(self.collisionWidth, self.collisionHeight)
 		end
 		self.fixture = love.physics.newFixture(self.body, self.physicsShape)
 		assert(self.body, "new body call failed with x:"..(x or "none") .."and y:"..(y or "none"))
@@ -142,6 +142,7 @@ function unit:draw()
 	if not self.fighter then
 		for i=1,#self.weapons do
 			if not self.weapons[i].dead then
+				assert(self.weapons[i].image, "no image for turret draw: "..i)
 				love.graphics.draw(self.weapons[i].image, self.weapons[i][x], self.weapons[i][y], self.weapons[i].angle, 1, 1, self.weapons[i].vertex[x], self.weapons[i].vertex[y])
 				if self.weapons[i].customDraw then --for rocket turrets mostly
 					self.weapons[i]:customDraw()

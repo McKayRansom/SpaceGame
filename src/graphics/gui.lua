@@ -40,8 +40,8 @@ local oreIconPos = { 349, 49}
 local powerImage, dashboardImage, arrowImage, minimapImage, instrumentsImage
 local metalIcon, oreIcon
 local scaleX, scaleY
-local screenHeight = 768
-local screenWidth = 1366
+local screenHeight = screenHeight
+local screenWidth = screenWidth
 local universalShortcuts = {
 ["f10"] = "menu",
 -- [" "] = deselect,

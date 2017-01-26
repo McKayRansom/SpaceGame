@@ -100,7 +100,7 @@ function projectile.updateMissile(m, dt) -- turn missile towards target ( and ap
 		-- m.angle = limit(-m.turningSpeed *  dt, m.turningSpeed * dt, (angle - m.angle)+m.angle		
 		local vel = utils.getDistance(m.v[x], m.v[y])
 		m.v = {vel * math.cos(m.angle), vel * math.sin(m.angle)}
-		m.a = {m.accel * math.cos(m.angle), m.accel * -math.sin(m.angle)}
+		m.a = {m.accel * -math.cos(m.angle), m.accel * math.sin(m.angle)}
 	
 	-- else
 		-- m.a = {0,0}

@@ -14,7 +14,7 @@ function heavyCruiserTurret.new(xpos, ypos, firingArc)
 		weaponType = "projectile",
 		angle = 0,
 		reloadTime = 3,
-		reload = math.random(1),
+		reload = math.random() * 10,
 		readyToFire = false,
 		image = love.graphics.newImage("images/units/spaceShips/heavyCruiserTurret.png"),
 		collisionSize = 40,

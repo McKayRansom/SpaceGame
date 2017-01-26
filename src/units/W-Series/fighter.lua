@@ -10,13 +10,13 @@ function fighter:new(...)
 	o.width =10
 	o.collisionHeight = 4
 	o.collisionWidth = 5
-	o.health = 500
+	o.maxHealth = 500
 	o.mass = 1
 	o.inertia = 800
 	--engineStuff
 	o.engineForce = 300
 	o.thrusterForce = 100
-	o.engineHealth = 100
+	o.engineMaxHealth = 100
 	o.engineEffects = {
 		SpriteAnimation:new("images/units/effects/pixelEngineEffect.png",1,5,5,1,.05, 8, .5),
 		{{0,5}}

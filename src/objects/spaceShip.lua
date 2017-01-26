@@ -80,7 +80,7 @@ function spaceShip:landOn()
 			local angle = utils.getAngle(sx -planet.x, sy-planet.y)
 			local pointX, pointY = (planet.radius - 50) * math.cos(angle) + planet.x, (planet.radius - 50) * math.sin(angle) + planet.y
 			for i=1, self.landingQuantity do
-				local unit = self.landingUnit:new(pointX, pointY, angle, self.team, 0, 0, self.player)
+				local unit = self.landingUnit:new(planet, pointX, pointY, self.team, angle)
 				if self.player then
 					self.player = false
 					player = unit

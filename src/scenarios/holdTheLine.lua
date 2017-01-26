@@ -95,7 +95,7 @@ local spawnTime = -10
 function scenarioUpdate(dt)
 	spawnTime = spawnTime + dt
 	if spawnTime > 3 and spawned < 180 then
-		local i = math.random() * 5
+		local i = math.random() * 9
 		local f = lineFormation.new({
 		tank:new(currentPlanet, 4000, 2000 + (i* 300), bad, -math.pi/2),
 		tank:new(currentPlanet, 4000, 2000 + (i* 300) - 50, bad, -math.pi/2),

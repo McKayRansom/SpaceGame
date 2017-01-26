@@ -1,8 +1,10 @@
+screenHeight = 1440
+screenWidth = 2560
+	
 function love.load()
-	love.window.setMode(1366,768)
-	screenResolution = {1366,768}
-	screenHeight = 768
-	screenWidth = 1366
+	love.window.setMode(2560, 1440)
+	screenResolution = {2560,1440}
+	
 	love.mouse.setRelativeMode(true)
 	love.window.setFullscreen(true)
 	screenWidth = love.window.getWidth()
