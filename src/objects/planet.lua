@@ -1,4 +1,6 @@
 planet = {}
+--a shader to create planet fade futher from the edge!
+--a note - on linux the abs() are nescesary!
 local shader = love.graphics.newShader[[
 		extern number zoom;
 		extern number radius;
@@ -10,11 +12,11 @@ local shader = love.graphics.newShader[[
 		{
 			screen_coords.y = screenSize.y-screen_coords.y;
 			screen_coords = (screen_coords/zoom)-view;
-			color *= (sqrt(pow(screen_coords.x-center.x, 2) + pow(screen_coords.y-center.y, 2))-innerRadius)/radius;
+			color *= (sqrt(pow(abs(screen_coords.x-center.x), 2) + pow(abs(screen_coords.y-center.y), 2))-innerRadius)/radius;
 			return color;
 		}
-	
-	
+
+
 	]]
 function planet.new(object, image, name, jumpNodes, resources)
 	object.image = image or testPlanet
@@ -35,17 +37,17 @@ function planet.new(object, image, name, jumpNodes, resources)
 	object.resources = {} -- ore nodes
 	object.wind = {0, -5} -- blows smoke in a certain direction :)
 	local angle = 0
-	local dist = object.radius/2  
+	local dist = object.radius/2
 	local da = (2*math.pi)/resources
 	for i=1, resources do
 		table.insert(object.resources, {
-				object.x + math.cos(angle) * dist + love.math.random(-1000, 1000), 
+				object.x + math.cos(angle) * dist + love.math.random(-1000, 1000),
 				object.y + math.sin(angle) * dist + love.math.random(-1000, 1000),
 				["built"] = false
 			})
 		angle = angle + da
 	end
-		
+
 	--make a approximated physics shape. For both space and ground to collide on (increase the 45 to have better accuracy but potentially worse performance... no idea
 	-- object.planetShape = love.physics.newCircleShape(3000)
 	--	love.graphics.circle("fill", 3500, 3000, 1400, 45)
@@ -61,7 +63,7 @@ function planet.new(object, image, name, jumpNodes, resources)
 	end
 	object.planetShape = love.physics.newChainShape(true, points)
 	object.planetFixture = love.physics.newFixture(object.planetBody, object.planetShape)
-	
+
 	object.jumpNodes = jumpNodes or {}
 	object.shader = shader
 end

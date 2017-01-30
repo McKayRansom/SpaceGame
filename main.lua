@@ -1,21 +1,21 @@
-screenHeight = 1440
-screenWidth = 2560
-	
+screenHeight = 768
+screenWidth = 1366
+
 function love.load()
-	love.window.setMode(2560, 1440)
-	screenResolution = {2560,1440}
-	
+	love.window.setMode(1366, 768)
+	screenResolution = {1366,768}
+
 	love.mouse.setRelativeMode(true)
 	love.window.setFullscreen(true)
 	screenWidth = love.window.getWidth()
 	screenHeight = love.window.getHeight()
 	love.graphics.setDefaultFilter("nearest", "nearest", 1)
 	require("src/loader")
-	
+
 	--implement ship selecction for each scene
 
 	scene = game:new("src/scenarios/holdTheLine", 1713)
-	
+
 end
 
 function love.update(dt)
