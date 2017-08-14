@@ -1,20 +1,22 @@
 planets = {{},{},{}}
-planet.new(planets[1], false, "Ezagon",
+planet.new(planets[1], 1000, 2000, false, "Ezagon",
 	{
 	{p = {6000, 6000}, destination = planets[2]},
 	{p = {0, 0}, destination = planets[3]}
 	}, 3)
-planet.new(planets[2], false, "Casina Prime",
+planet.new(planets[2], 1500, 2000, false, "Casina Prime",
 	{
 	{p = {-1000, -1000}, destination = planets[1]}
 	}, 3)
-planet.new(planets[3], false, "Doengon",
+planet.new(planets[3], 1750, 1750, false, "Doengon",
 	{
 	{p = {6000, 6000}, destination = planets[1]},
 	}, 3)
 currentPlanet = planets[1]
 planets[1].good = {};
 planets[1].bad = {};
+--planets[3].good = true
+--planets[3].good = {};
 local good = {
 name = "good",
 enimies = "bad",
@@ -25,6 +27,7 @@ name = "bad",
 enimies = "good",
 color = {225, 0, 0}
 }
+teams = {good, bad}
 local timer = false
 
 heavyCruiser:new(currentPlanet, 0, 2000, good, 0,0,0)

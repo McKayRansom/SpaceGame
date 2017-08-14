@@ -1,6 +1,6 @@
 planets = {{}}
 
-planet.new(planets[1], false, "Ezagon",{}, 13)
+planet.new(planets[1], 1000, 2000, false, "Ezagon",{}, 13)
 
 currentPlanet = planets[1]
 planets[1].good = {}
@@ -70,13 +70,13 @@ end
 -- end
 
 for i=2, 2 do
-	-- lineFormation.new({
-	-- rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300), good, math.pi/2),
-	-- rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300) - 50, good, math.pi/2),
-	-- rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300) - 100, good, math.pi/2),
-	-- rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300)  - 150, good, math.pi/2),
-	-- rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300)  - 200, good, math.pi/2)
-	-- }, math.pi/2)
+	lineFormation.new({
+	rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300), good, math.pi/2),
+	rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300) - 50, good, math.pi/2),
+	rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300) - 100, good, math.pi/2),
+	rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300)  - 150, good, math.pi/2),
+	rocketTruck:new(currentPlanet, 1700, 2000 + (i* 300)  - 200, good, math.pi/2)
+	}, math.pi/2)
 end
 
 -- for i=1, 3 do

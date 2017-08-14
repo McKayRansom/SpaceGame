@@ -9,7 +9,7 @@ local selecting = false
 local selection = {}
 local selectionStart = {0,0}
 local mouseDown = false --later a table {0, 0, 0, 0, 0}
-controlGroups = {} 
+controlGroups = {}
 local socket = require("socket")
 require "enet"
 
@@ -50,15 +50,15 @@ what is the play space? solar system with stars+planets would be really cool. Or
 
 
 function game:setupKeyHandler()
-	
+
 	-- keyHandler.new("w", playerFormation.action, playerFormation, "fireEngines")
 	-- keyHandler.new("d", playerFormation.action, playerFormation,"turnRight")
 	-- keyHandler.new("a", playerFormation.action, playerFormation,"turnLeft")
 	-- keyHandler.new("a", playerFormation.action, playerFormation,"leftThrusters")
 	-- keyHandler.new("d", playerFormation.action, playerFormation,"rightThrusters")
 	-- keyHandler.new("s", playerFormation.action, playerFormation,"reverseThrusters")
-	
-	
+
+
 	-- keyHandler.new("1", playerFormation.action, playerFormation, "increasePower", "shields")
 	-- keyHandler.new("2", playerFormation.action, playerFormation, "increasePower", "engines")
 	-- keyHandler.new("3", playerFormation.action, playerFormation, "increasePower", "weapons")
@@ -66,7 +66,7 @@ end
 
 function game:new(scenario, seed) --totdo: implement ship selection for each scene
 	loadImages()
-	gui.load()
+	gui.load("gameElements")
 	ships = {}
 	love.graphics.setFont(love.graphics.newFont(20))
 	if seed then
@@ -76,6 +76,8 @@ function game:new(scenario, seed) --totdo: implement ship selection for each sce
 		self.seed = love.math.getRandomSeed()
 	end
 	self.ore = 0
+	--self.galaxyView = false;
+	self.galaxyFleets = {}; --galaxy fleets in transit
 	zoom = 1
 	viewX = 0
 	viewY = 0
@@ -83,7 +85,7 @@ function game:new(scenario, seed) --totdo: implement ship selection for each sce
 	cameraY = 0
 	require(scenario)
 	self:setupKeyHandler()
-	
+
 	return self
 end
 
@@ -96,65 +98,80 @@ local clientActive
 function game:draw()
 	love.graphics.scale(zoom, zoom)
 	love.graphics.translate(viewX, viewY)
-	local p = currentPlanet
-	planet.draw(p)
-	for i=1, #p.resources do
-		love.graphics.draw(resourceDepositImage, p.resources[i][1], p.resources[i][2], 0, 1, 1, 25, 25)
-	end
-	--a different planet drawing method...
-	--love.graphics.setColor(107, 65 ,0 , 255)
-	--love.graphics.setLinewidth(10)
-	--love.graphics.setLineStyle("rough")
-	--love.graphics.circle("line", 3500, 3000, 1400, 45)
-	love.graphics.setColor(255,255,255,255)
-	-- drawBackground()
-	
-	for i=1, #p.jumpNodes do
-		local n = p.jumpNodes[i]--node
-		love.graphics.print(n.destination.name, n.p[x] + 10, n.p[y] - 25)
-		love.graphics.draw(jumpNode, n.p[x], n.p[y])
-	end
-	--draw effects (engine effects and impact effects, basically any sprites)
-	for i=1, #p.effects do
-		local effect = p.effects[i]
-		effect.sprite:start(effect.frame)
-		effect.sprite:draw(effect[x], effect[y], effect.angle)
-	end
-	
-	if selection[1] then
-		for i=1,#selection do
-			if not selection[i].body:isDestroyed() then
-				if selection[i].moveQue[1] then -- it is 20x24
-					love.graphics.draw(destinationIndicator, selection[i].moveQue[1][1], selection[i].moveQue[1][2], 0, 1, 1, 10, 12)
+	if not self.galaxyView then
+		local p = currentPlanet
+		planet.draw(p)
+		for i=1, #p.resources do
+			love.graphics.draw(resourceDepositImage, p.resources[i][1], p.resources[i][2], 0, 1, 1, 25, 25)
+		end
+		--a different planet drawing method...
+		--love.graphics.setColor(107, 65 ,0 , 255)
+		--love.graphics.setLinewidth(10)
+		--love.graphics.setLineStyle("rough")
+		--love.graphics.circle("line", 3500, 3000, 1400, 45)
+		love.graphics.setColor(255,255,255,255)
+		-- drawBackground()
+
+		for i=1, #p.jumpNodes do
+			local n = p.jumpNodes[i]--node
+			love.graphics.print(n.destination.name, n.p[x] + 10, n.p[y] - 25)
+			love.graphics.draw(jumpNode, n.p[x], n.p[y])
+		end
+		--draw effects (engine effects and impact effects, basically any sprites)
+		for i=1, #p.effects do
+			local effect = p.effects[i]
+			effect.sprite:start(effect.frame)
+			effect.sprite:draw(effect[x], effect[y], effect.angle)
+		end
+
+		if selection[1] then
+			for i=1,#selection do
+				if not selection[i].body:isDestroyed() then
+					if selection[i].moveQue[1] then -- it is 20x24
+						love.graphics.draw(destinationIndicator, selection[i].moveQue[1][1], selection[i].moveQue[1][2], 0, 1, 1, 10, 12)
+					end
+					love.graphics.setColor(0,255, 0, 100)
+					love.graphics.circle("fill", selection[i].body:getX(), selection[i].body:getY(), 20, 45)
+					love.graphics.setColor(255,255,255,255)
 				end
+			end
+
+			if selection[1].rayHistory then --debug draw pathfind rays and stuff
 				love.graphics.setColor(0,255, 0, 100)
-				love.graphics.circle("fill", selection[i].body:getX(), selection[i].body:getY(), 20, 45)
+				for i=1, #selection[1].rayHistory do
+					love.graphics.line(unpack(selection[1].rayHistory[i]))
+				end
 				love.graphics.setColor(255,255,255,255)
+				love.graphics.setColor(255, 0, 255, 255)
+				for i=1, #selection[1].triedPoints do
+
+					love.graphics.draw(destinationIndicator, selection[1].triedPoints[i][2], selection[1].triedPoints[i][3], 0, 1, 1, 10, 12)
+				end
+				love.graphics.setColor(255, 255, 255, 255)
 			end
 		end
-		
-		if selection[1].rayHistory then --debug draw pathfind rays and stuff
-			love.graphics.setColor(0,255, 0, 100)
-			for i=1, #selection[1].rayHistory do
-				love.graphics.line(unpack(selection[1].rayHistory[i]))
-			end
-			love.graphics.setColor(255,255,255,255)
-			love.graphics.setColor(255, 0, 255, 255)
-			for i=1, #selection[1].triedPoints do
-				
-				love.graphics.draw(destinationIndicator, selection[1].triedPoints[i][2], selection[1].triedPoints[i][3], 0, 1, 1, 10, 12)
-			end
-			love.graphics.setColor(255, 255, 255, 255)
+		for i,k in pairs(p.units) do
+			k:draw()
 		end
-	end
-	for i,k in pairs(p.units) do
-		k:draw()
-	end
-	love.graphics.setColor(255, 255, 255, 255)
-	projectile.draw(p.spaceProjectiles)
-	projectile.draw(p.groundProjectiles)
-	laser.draw(p.groundLasers)
-	-- laser.draw(p.groundLasers)
+		love.graphics.setColor(255, 255, 255, 255)
+		projectile.draw(p.spaceProjectiles)
+		projectile.draw(p.groundProjectiles)
+		laser.draw(p.groundLasers)
+		-- laser.draw(p.groundLasers)
+	else
+		for i = 1, #planets do
+			local p = planets[i]
+			love.graphics.print(p.name, p.galX - p.galRadius, p.galY + p.galRadius)
+			planet.draw(p, true);
+			for i = 1, #teams do
+				if (p[teams[i].name]) then
+					love.graphics.setColor(teams[i].color);
+					love.graphics.circle('fill', p.galX -p.galRadius + i * 30, p.galY -p.galRadius, 25, 45);
+					love.graphics.setColor(255,255,255,255);
+				end
+			end
+		end
+  end
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.origin()
 	if selecting then
@@ -162,7 +179,7 @@ function game:draw()
 		love.graphics.rectangle('fill', selectionStart[1], selectionStart[2], mx - selectionStart[1], my - selectionStart[2])
 		love.graphics.setColor(255, 255, 255, 255)
 	end
-	
+
 	gui.draw()
 	if self.popup then
 		self.popup:draw()
@@ -215,13 +232,10 @@ function game:update(dt)
 		viewX = -cameraX + ((screenWidth/2) * 1/(zoom))
 		viewY = -cameraY + ((screenHeight/2) * 1/(zoom))
 	end
-	
+
 	worldMX, worldMY = (screenWidth*(1/zoom)) / (screenWidth/mx) - viewX, (screenHeight*(1/zoom)) / (screenHeight/my) - viewY
 	self.ore = 0
-	if not (oldX == mx and oldY == my) then
-		gui.mouseMoved()
-	end
-	if self.paused then return end --if paused don't update ships
+	if self.paused or self.galaxyView then return end --if paused don't update ships
 	if selection[1] then --debug printing of economy infos
 		display[3] = selection[1].cargo
 		display[4] = not selection[1].disabled
@@ -239,18 +253,18 @@ function game:update(dt)
 		viewX = -px + ((screenWidth/2) * 1/(zoom))
 		viewY = -py + ((screenHeight/2) * 1/(zoom))
 			--TODO: replace this with a callback
-		
+
 			if love.mouse.isDown("l")  then
 				player:fireWeapons(1)
 			end
 			if love.mouse.isDown("r") then
 				player:fireWeapons(2)
 			end
-		-- playerFormation:update()		
+		-- playerFormation:update()
 	end
 	scenarioUpdate(dt)
 	self:updateAllPlanets(dt)
-	
+
 	for i=1, #formations do -- updates line formations
 		if formations[i] then
 			formations[i]:update(dt)
@@ -277,18 +291,25 @@ end
 
 
 --kinda want to change jumping to more StarWars esque
-function game:checkJump() --se if selected units can jump (should be changed to a certain group of units when better stuff is added 
-	for i=1,#selection do
-		for j=1,#currentPlanet.jumpNodes do
-			if utils.getDistance(selection[i].body:getX(), selection[i].body:getY(), currentPlanet.jumpNodes[j].p[1], currentPlanet.jumpNodes[j].p[2]) < 500 then
-				selection[i]:jumpTo(currentPlanet.jumpNodes[j].destination)
-				if selection[i].player then
-					currentPlanet = currentPlanet.jumpNodes[j].destination
-				end
-				break
-			end
+function game:checkJump() --se if selected units can jump (should be changed to a certain group of units when better stuff is added
+	if (self.galaxyView) then --temp, allow jumping at will
+		if (selection[1]) then
+			currentPlanet = selection[1]
 		end
-		
+	else
+
+		for i=1,#selection do
+			for j=1,#currentPlanet.jumpNodes do
+				if utils.getDistance(selection[i].body:getX(), selection[i].body:getY(), currentPlanet.jumpNodes[j].p[1], currentPlanet.jumpNodes[j].p[2]) < 500 then
+					selection[i]:jumpTo(currentPlanet.jumpNodes[j].destination)
+					if selection[i].player then
+						currentPlanet = currentPlanet.jumpNodes[j].destination
+					end
+					break
+				end
+			end
+
+		end
 	end
 end
 
@@ -366,12 +387,12 @@ function game:keypressed(key, u)
 		server:new()
 		serverActive = true
 		print("startingServer")
-		
+
 	elseif key == "f12" then
 		client:new()
 		clientActive = true
 		print("startingClient")
-		
+
 	elseif key == "r" then
 		for i=1, #selection do
 			selection[i]:payDebts()
@@ -391,9 +412,17 @@ function game:keypressed(key, u)
 		end
 	elseif key == "p" then
 		self.paused = not self.paused
+	elseif key == "m" then
+		self.galaxyView = not self.galaxyView;
+		selection = {};
 	end
-	
+
 end
+
+function game:textinput(text)
+	gui.textinput(text)
+end
+
 function game:keyreleased(key, u)
 	-- if key == "lshift" then
 		-- player:toggleDampeners()
@@ -423,33 +452,37 @@ end
 
 function game:mousepressed(mx, my, button)
 	if gui.mousepressed(mx, my, button) then return end
-	if button == "l" then 
+	if button == 1 then
 		selecting = true
-		if not love.keyboard.isDown("lshift") then 
+		if not love.keyboard.isDown("lshift") then
 			selection = {}
 		end
 		selectionStart = {mx, my}
-	elseif button == "r" then 
+	elseif button == 2 then
 		mouseDown = {mx, my, (screenWidth*(1/zoom)) / (screenWidth/mx) - viewX, (screenHeight*(1/zoom)) / (screenHeight/my) - viewY, 0}
-	elseif button == "wu" then-- and  zoom < 2 then FIX: replaced in love 0.10
-		zoom = zoom  + .1
-	elseif button == "wd" then
-		zoom = zoom - .1
-		if zoom < .1 then zoom = .05 end
 	end
-	
+
 end
 
 function game:mousereleased(mx, my, button)
-	if button == "l" and selecting then
+	if button == 1 and selecting then
 		ships = currentPlanet.units
+		if (self.galaxyView) then
+			ships = planets;
+		end
+
 		local startX, startY = (screenWidth*(1/zoom)) / (screenWidth/selectionStart[1]) - viewX, (screenHeight*(1/zoom)) / (screenHeight/selectionStart[2]) - viewY
 		local endX, endY = (screenWidth*(1/zoom)) / (screenWidth/mx) - viewX, (screenHeight*(1/zoom)) / (screenHeight/my) - viewY
 		for i=1, #ships do
 			local s = ships[i]
-			local x, y = s.body:getPosition()
+			local x, y;
+			if (not self.galaxyView) then
+				x, y = s.body:getPosition()
+			else
+				x, y = s.galX, s.galY;
+			end
 			if (x > startX and x < endX) and ( y > startY and y < endY) and not s.isTrailer then
-				
+
 				-- if ships[i].formation then
 					-- if selection[1] and selection[1].formation and love.keyboard.isDown("lshift") and not (selection[1].formation == ships[i].formation) then -- merge formations
 						-- ships[i].formation:merge(selection[1].formation)
@@ -465,7 +498,7 @@ function game:mousereleased(mx, my, button)
 		end
 		selecting = false
 		gui.updateSelection(selection)
-	elseif button == "r" and mouseDown then
+	elseif button == 2 and mouseDown then
 		if mouseDown[5] > 1 then
 			self:moveSelectionTo(mx, my, mouseDown)
 		else
@@ -476,7 +509,20 @@ function game:mousereleased(mx, my, button)
 		gui.mousereleased(mx, my, button)
 	end
 end
-	
+
+function game:mousemoved(mx, my, dx, dy, isTouch)
+	gui.mouseMoved(mx, my);
+end
+
+function game:wheelmoved(x, y)
+	if y > 0 then
+		zoom = zoom  * 1.1
+	elseif y < 0 then
+		zoom = zoom * 0.9
+		--if zoom < .1 then zoom = .05 end
+	end
+end
+
 function game:moveSelectionTo(mx, my, mouseDown)
 	if not selection[1] then return end
 	local mx, my = (screenWidth*(1/zoom)) / (screenWidth/mx) - viewX, (screenHeight*(1/zoom)) / (screenHeight/my) - viewY
@@ -500,10 +546,10 @@ function game:moveSelectionTo(mx, my, mouseDown)
 		-- selection[1].formation:moveTo(mx, my, isAttackMove)
 	-- else
 	--copy this from formation!!!
-	
+
 		-- for i=1, #selection do
 			-- selection[i]:moveTo(mx, my, isAttackMove)
 		-- end
 	-- end
-	
+
 end

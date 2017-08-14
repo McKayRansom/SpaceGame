@@ -7,25 +7,18 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 	table.insert(self.parents, unit)
 	setmetatable(self, { __index = utils.checkParents })
 	if not self.fighter then
-		self.body = love.physics.newBody(planet.world, x or 0, y or 0, "dynamic")
-		if self.shape then
-			self.physicsShape = love.physics.newPolygonShape(unpack(self.shape))
-		else
-			self.physicsShape = love.physics.newRectangleShape(self.collisionWidth, self.collisionHeight)
-		end
-		self.fixture = love.physics.newFixture(self.body, self.physicsShape)
-		assert(self.body, "new body call failed with x:"..(x or "none") .."and y:"..(y or "none"))
+		self:setPhysics(planet.world, x, y)
 	else --we are a fighter so no collisions
 		self.body = physicsObject.new()
 		self.body.m = self.mass
 		self.body.i = self.inertia
 		self.body:setPosition(x, y)
 	end
-	
+
 	self.effects = {}
 	self.team = team
 	self.planet = planet
-	self.world = self.planet.world
+
 	if self.maxShields then
 		self.shieldPower = 0
 		self.shieldPowerPercent = .33
@@ -38,8 +31,8 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 	self.engineHealth = self.engineMaxHealth
 	if debug_settings.healthMult then self.health = self.health * debug_settings.healthMult end -- DEBUG
 	if debug_settings.noShields then self.shields = 0 end
-	
-	
+
+
 	-- self.enginePower = 0
 	-- self.enginePowerPercent = .33
 	-- self.engineMaxHealth = self.engineHealth
@@ -53,8 +46,8 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 	-- self.weaponPowerPercent = .33
 	local angle = angle or 0
 	self.body:setAngle(angle)
-	
-	
+
+
 	if vx then
 		self.body:setLinearVelocity(vx, vy)
 	end
@@ -62,14 +55,30 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 		for i=1,#self.engineEffects[2] do
 			local t = self.engineEffects[2][i]
 			local dist = utils.getDistance(t[1], t[2])
-			
+
 			effect.new(self, -math.sin(angle) * dist + x, math.cos(angle) * dist + y, self.engineEffects[1], false, true, 0)
 		end
 	end
-	
+
 	table.insert(planet.units, self)
 	table.insert(planet[team.name], self)
 	return self
+end
+
+function unit:setPhysics(world, x, y)
+	if self.fighter then return end
+	--self.world = world
+	if (self.body) then
+		self.body:destroy();
+	end
+	self.body = love.physics.newBody(world, x or 0, y or 0, "dynamic")
+	if self.shape then
+		self.physicsShape = love.physics.newPolygonShape(unpack(self.shape))
+	else
+		self.physicsShape = love.physics.newRectangleShape(self.collisionWidth, self.collisionHeight)
+	end
+	self.fixture = love.physics.newFixture(self.body, self.physicsShape)
+	assert(self.body, "new body call failed with x:"..(x or "none") .."and y:"..(y or "none"))
 end
 
 --packs a unit's data for stuff
@@ -84,7 +93,7 @@ function unit:pack()
 			str = str..key.."=("..tostring(value).."), "
 		end
 	end
-	-- if self.moveQue then 
+	-- if self.moveQue then
 		-- str = str.."moveQue=("
 		-- for i=1, #self.moveQue do
 			-- str = str..value
@@ -114,7 +123,7 @@ end
 
 function unit:increasePower(which)
 	local s = -.02
-	if not (self.shieldPowerPercent >= .02) then s = -self.shieldPowerPercent end 
+	if not (self.shieldPowerPercent >= .02) then s = -self.shieldPowerPercent end
 	local e = -.02
 	if not (self.enginePowerPercent >= .02) then e = -self.enginePowerPercent end
 	local w = -.02
@@ -159,7 +168,7 @@ function unit:draw()
 		effect.sprite:draw(effect[x], effect[y], effect.angle)
 	end
 	if self.drawSelf then self:drawSelf() end
-	
+
 	--debug engine polygon, cool!
 	-- local height = self.engineHeight/2
 	-- local width = self.engineWidth/2
@@ -192,7 +201,7 @@ function unit:fireWeapons(which)
 					vy = 0
 					local inaccuracy = 0--math.random(-weapon.accuracy, weapon.accuracy) DISABLED
 					vx = vx + math.cos(turretFacing + inaccuracy) * velocity
-					vy = vy + math.sin(turretFacing + inaccuracy) * velocity 
+					vy = vy + math.sin(turretFacing + inaccuracy) * velocity
 					local x = math.cos(angle) * dist + ship.body:getX() + math.cos(turretFacing) * (weapon.barrelDist or 0) - math.sin(turretFacing) * (weapon.verticalOffset or 1)
 					local y = math.sin(angle) * dist + ship.body:getY() + math.sin(turretFacing) * (weapon.barrelDist or 0) + math.cos(turretFacing) * (weapon.verticalOffset or 1)
 					local p = projectile.new(x, y, vx,vy, turretFacing, ship.team, weapon)
@@ -226,7 +235,7 @@ function unit:fireWeapons(which)
 					table.insert(self.planet.groundProjectiles, weapon.laser)
 				end
 				weapon.readyToFire = false
-				weapon.reload = 0		
+				weapon.reload = 0
 			elseif weaponType == "drone" then -- WIP NOT DONE use some of the fighter work. that was done after this temp stuff
 				local tx = weapon[x]
 				local ty = weapon[y]
@@ -237,7 +246,7 @@ function unit:fireWeapons(which)
 				local turretFacing = weapon.angle + ship.body:getAngle()
 				local velocity = weapon.velocity * ship.weaponPowerPercent * (weapon.health/weapon.maxHealth)
 				vx = vx + math.cos(turretFacing) * velocity-- + ship.v[x
-				vy = vy + math.sin(turretFacing) * velocity 
+				vy = vy + math.sin(turretFacing) * velocity
 				drone.new(math.cos(angle) * dist + ship.body:getX(), math.sin(angle) * dist + ship.body:getY(), vx,vy, turretFacing, weapon.mass, smallProjectileImage, ship.team)
 				weapon.readyToFire = false
 				weapon.reload = 0
@@ -296,7 +305,7 @@ function unit:update(dt)
 		self.body:updatePhysics(dt)
 	end
 	self:updateEffects(dt)
-	if self.dead then 
+	if self.dead then
 		return
 	end
 	if self.shields then
@@ -353,13 +362,13 @@ function unit:updateCargo(dt) --if we are a cargoTruck ing truck
 				local originalAmount = d[expectedAmount]
 				d[expectedAmount] =  originalAmount + self[cargo]--set their expected Amount to be what we think we will give them
 				self.cargoDebt = d[expectedAmount] - originalAmount
-				
+
 				return
 			end
 		end
 		--we didn't find anyone
 		self.checkingDemandSpot = false
-	--state:looking for more cargo	
+	--state:looking for more cargo
 	elseif self.findSupply then
 		self.timeSinceAction = 0 --reset timeout
 		local list = {}
@@ -427,7 +436,7 @@ function unit:updateCargo(dt) --if we are a cargoTruck ing truck
 			self.findSupply = true
 		end
 	end
-	
+
 end
 
 

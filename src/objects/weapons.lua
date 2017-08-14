@@ -23,7 +23,7 @@ function projectile.new(x, y, vx, vy, angle, team, weapon) -- weapon = weapon wh
 	object.team = team
 	object.damage = weapon.damage -- missile only (for now) \/
 	object.shieldDamage = weapon.shieldDamage
-	object.speed = weapon.velocity 
+	object.speed = weapon.velocity
 	object.turningSpeed = weapon.turningSpeed
 	object.target = weapon.target
 	object.health = 50
@@ -36,7 +36,7 @@ function projectile.new(x, y, vx, vy, angle, team, weapon) -- weapon = weapon wh
 		object.accel = weapon.accel
 	else
 		object.weaponType = "projectile"
-	end	
+	end
 	object.getHullDamage = function(self) return self.damage or physicsObject.getKineticEnergy(self) end
 	object.getShieldDamage = function(self) return self.shieldDamage or physicsObject.getKineticEnergy(self) end
 	setmetatable(object, { __index = physicsObject })
@@ -83,7 +83,7 @@ function projectile.updateProjectile(p, ships, dt)
 		projectile.updateMissile(p, dt)
 	end
 	p:updatePhysics(dt)
-	for i, k in pairs(ships) do 
+	for i, k in pairs(ships) do
 		if not (p.team == k.team) then
 			if shipToWeaponCollision(k, p) then
 				return true
@@ -93,15 +93,16 @@ function projectile.updateProjectile(p, ships, dt)
 end
 
 function projectile.updateMissile(m, dt) -- turn missile towards target ( and apply accell)
+	--print("acceL: " .. m.accel .. "angle: " .. m.angle)
 	-- if m.target then
 	local target = m.parent.targets[1]
 	-- if target and not target.dead then
 		-- local angle = utils.limitAngle(utils.getAngle(m.p[x] - target.body:getX(), m.p[y] - target.body:getY()))
-		-- m.angle = limit(-m.turningSpeed *  dt, m.turningSpeed * dt, (angle - m.angle)+m.angle		
+		-- m.angle = limit(-m.turningSpeed *  dt, m.turningSpeed * dt, (angle - m.angle)+m.angle
 		local vel = utils.getDistance(m.v[x], m.v[y])
 		m.v = {vel * math.cos(m.angle), vel * math.sin(m.angle)}
-		m.a = {m.accel * -math.cos(m.angle), m.accel * math.sin(m.angle)}
-	
+		m.a = {m.accel * math.cos(m.angle), m.accel * math.sin(m.angle)}
+
 	-- else
 		-- m.a = {0,0}
 	-- end
@@ -142,7 +143,7 @@ function laser.new(x, y, angle, power, color, team, fireTime)
 	object.dist = object.falloff * 5
 	object.damage = 0
 	object.impactSprite = tinyImpact
-	object.getHullDamage = function(self) 
+	object.getHullDamage = function(self)
 		return self.damage end
 	object.getShieldDamage = function(self) return self.damage end
 	object.getImpulse = function(self) return 0,0 end
@@ -164,7 +165,7 @@ end
 
 function laser.updatePhysics(ships, lasers, dt)
 	for j=1,#lasers do
-		
+
 		if lasers[j] then
 			local l = lasers[j]
 			l.time = l.time + dt
@@ -191,7 +192,7 @@ function laser.updatePhysics(ships, lasers, dt)
 						end
 					end
 				end
-				for i, k in pairs(ships) do 
+				for i, k in pairs(ships) do
 					if not (t == k.team) then
 						l.damage = l.power * dt
 						if shipToWeaponCollision(k, l) then
@@ -202,11 +203,11 @@ function laser.updatePhysics(ships, lasers, dt)
 						end
 					end
 				end
-				
+
 				if l.endX then
 					break
 				end
-				
+
 			end
 			l.endX = l.p[x]
 			l.endY = l.p[y]

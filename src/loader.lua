@@ -33,10 +33,11 @@ local requireList = {
 "src/utility/client",
 "src/objects/weapons",
 "src/graphics/gui",
+"src/graphics/guiDefs",
 "src/graphics/effect",
 "src/utility/input",
 "src/scenes/game",
---"src/scenes/tradingScene",
+"src/scenes/mainMenu",
 "src/objects/formation",
 }
 for i=1,#requireList do
@@ -46,8 +47,8 @@ print("finishedLoadingFiles")
 function loadImages()
 	print("loadingImages...")
 	--I really don't think this is good. Just have each unit def load their own files! it just makes more sense
-	
-	
+
+
 	--ground units
 	-- jeepImage = love.graphics.newImage("images/units/jeep.png")
 	-- tankImage = love.graphics.newImage("images/units/tankOutline.png")
@@ -55,12 +56,12 @@ function loadImages()
 	-- ammoTruckImage = love.graphics.newImage("images/units/ammoTruck.png")
 	-- rocketTruckTurretImage = love.graphics.newImage("images/units/rocketTruckTurret.png")
 	-- rocketTruckMissileImage = love.graphics.newImage("images/units/rocketTruckMissile.png")
-	
+
 	-- tankFactoryImage = love.graphics.newImage("images/units/tankFactoryOutline.png")
 	-- resourceBuildingImage = love.graphics.newImage("images/units/resourceBuilding.png")
 	-- resourceBuildingSmokeImage = love.graphics.newImage("images/units/resourceBuildingSmoke.png")
 	-- tankFactoryOtherImage = love.graphics.newImage("images/units/tankFactoryOutlineOther.png")
-	
+
 	-- --spaceUnits
 	-- shipyardImage = love.graphics.newImage("images/units/shipyard.png")
 	-- battleCruiserImage = love.graphics.newImage("images/units/battleCrusier.png")
@@ -79,7 +80,7 @@ function loadImages()
 		medium =  SpriteAnimation:new("images/units/effects/engineEffectMeduim.png",45,20,2,1,.2),
 		pixel = SpriteAnimation:new("images/units/effects/pixelEngineEffect.png",1,5,5,1,.2),
 	}
-	
+
 	SpriteAnimation.load(shieldImpact, .15)
 	smallImpact:load(.15)
 	tinyImpact:load(.07)

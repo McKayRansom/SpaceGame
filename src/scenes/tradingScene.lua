@@ -46,8 +46,8 @@ function tradingScene:update(dt)
 end
 
 function tradingScene:mousepressed(mx, my, button)
-	if button == "l" then
-		
+	if button == 1 then
+
 	end
 end
 

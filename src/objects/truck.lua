@@ -24,7 +24,7 @@ end
 
 function truck:increasePower(which)
 	local s = -.02
-	if not (self.shieldPowerPercent >= .02) then s = -self.shieldPowerPercent end 
+	if not (self.shieldPowerPercent >= .02) then s = -self.shieldPowerPercent end
 	local e = -.02
 	if not (self.enginePowerPercent >= .02) then e = -self.enginePowerPercent end
 	local w = -.02
@@ -55,7 +55,7 @@ function truck:reverseThrusters() -- these need to be based on direction of moti
 	local force = self.brakingForce
 	if self.backwards then
 		force = self.engineForce
-	end	
+	end
 	force = force * .33--self.enginePowerPercent * (self.engineHealth/self.engineMaxHealth)
 	local angle = -self.body:getAngle()
 	local fx = math.sin(angle) * force
@@ -80,7 +80,7 @@ end
 
 function truck:toggleDampeners()
 	self.dampeners = not self.dampeners
-end	
+end
 
 function truck:moveTo(x,y, angle, isAttackMove)
 	self.moveQue = {{x,y, angle}}
@@ -90,7 +90,7 @@ end
 
 -- function truck:target(ship)
 	-- self.target = ship
--- end	
+-- end
 
 function truck:updateSelf(dt)
 	local sx, sy = self.body:getPosition()
@@ -105,7 +105,7 @@ function truck:updateSelf(dt)
 	local steeringTowardsCenter
 	if self.hasTrailer then
 		trailerAngle = utils.limitAngle(self.trailer.body:getAngle() - sa)
-		steeringTowardsCenter = (self.steering > 0 and trailerAngle > 0) or (self.steering < 0 and trailerAngle < 0) 
+		steeringTowardsCenter = (self.steering > 0 and trailerAngle > 0) or (self.steering < 0 and trailerAngle < 0)
 	end
 	-- display[3] = trailerAngle
 	-- display[4] = self.steering
@@ -163,14 +163,14 @@ function truck:updateSelf(dt)
 			return
 		end
 		--AI weapon firing
-		
+
 		for i=1,#self.weapons do
 			if self.weapons[i].reload < self.weapons[i].reloadTime then
 				self.weapons[i].reload = self.weapons[i].reload + dt
 			end
 			local j = 1
 			while self.targets[j] do
-				if self.targets[j].dead then 
+				if self.targets[j].dead then
 					table.remove(self.targets, j)
 				else
 					local a, b = self.targets[j].body:getPosition()
@@ -199,8 +199,8 @@ function truck:updateSelf(dt)
 				table.remove(self.moveQue, 1)
 			end
 		elseif self:turnTowards(sa, angle, dist) then -- or turn towards destination
-			
-			
+
+
 			local force = self.brakingForce *.33--* self.enginePowerPercent * (self.engineHealth/self.engineMaxHealth)
 			local dir = -1
 			local mass = self.body:getMass()
@@ -215,7 +215,7 @@ function truck:updateSelf(dt)
 			else
 				force = self.engineForce * .33
 			end
-			
+
 			if self.backwards then
 				force = force * -1
 			end
@@ -230,7 +230,7 @@ function truck:updateSelf(dt)
 		end
 	elseif not self.player then --brake when standing still/at destination
 		self.brake = true
-	end 
+	end
 end
 function truck:updateAntiSkid(sa, vel, velocityAngle)
 	local offset = utils.limitAngle(velocityAngle - sa)
@@ -252,8 +252,8 @@ end
 local callingUnit
 function truck.rayCastCallback(fixture, x, y, xn, yn, fraction)
 	if fixture == callingUnit.fixture then return 1 end
-	if (callingUnit.trailer and callingUnit.trailer.fixture == fixture) or (callingUnit.destination and fixture == callingUnit.destination.fixture)then 
-		return 1 
+	if (callingUnit.trailer and callingUnit.trailer.fixture == fixture) or (callingUnit.destination and fixture == callingUnit.destination.fixture)then
+		return 1
 	else
 		table.insert(callingUnit.rayCollides, {fraction, x, y, fixture})
 		table.insert(callingUnit.triedPoints, {fraction, x, y, fixture})
@@ -286,7 +286,7 @@ function truck:updatePathfinding(sx, sy, sa, vel)
 		return
 	else --there is something in the way
 		if isClearLeft then angleDiff = angleDiff * -1 end
-		
+
 		for i=1, 7 do
 			self.rayCollides = {}
 			local angle = startAngle + (angleDiff * i) -- alternating direction
@@ -314,7 +314,7 @@ end
 function truck:rayCast(x1, y1, x2, y2) --returns bool isClear, closest rayCollideObject and distance to closest object
 	self.rayCollides = {}
 	table.insert(self.rayHistory, {x1, y1, x2, y2})
-	self.world:rayCast( x1, y1, x2, y2, self.rayCastCallback)
+	self.planet.world:rayCast( x1, y1, x2, y2, self.rayCastCallback)
 	if not self.rayCollides[1] then
 		return true, false, false
 	else

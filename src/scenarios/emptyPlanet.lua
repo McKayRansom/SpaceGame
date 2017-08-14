@@ -1,6 +1,6 @@
 planets = {{}}
 
-planet.new(planets[1], false, "Ezagon",{}, 13)
+planet.new(planets[1], 1000, 2000, false, "Ezagon",{}, 13)
 
 currentPlanet = planets[1]
 planets[1].good = {}

@@ -1,23 +1,10 @@
-local shieldColor = {1,182,240, 255}
-local white = {255,255,255, 255}
-local clear = {0, 0, 0, 0, 0}
-local over = {0, 0, 0, 100}
-local pressed = {0, 0, 0, 200}
-local blue = {3,3,219, 255}
-local green = {1,124,13, 255}
-local goodBuildingPlacement = {1,124,13, 100}
-local red = {200,0,0, 255}
-local badBuildingPlacement = {200, 0, 0, 100}
-local yellow = {239,169,0, 255}
-local brown = {92, 56 ,0, 255}
-local grey = {92, 92, 92, 255}
-local black = {30,30,30, 255}
+local utf8 = require("utf8")
 
 gui = {}
 -- local playerGui = {
 	-- {color = blue, draw = "rectangle", percent = "shields", length = powerBarLength, height = powerBarHeight, x = 346, y = 156},
 	-- {color = blue, draw = "rectangle", percent = "shields", length = powerBarLength, height = powerBarHeight, x = 346, y = 156},
-	
+
 -- }
 -- local rtsGui = {
 -- }
@@ -40,218 +27,15 @@ local oreIconPos = { 349, 49}
 local powerImage, dashboardImage, arrowImage, minimapImage, instrumentsImage
 local metalIcon, oreIcon
 local scaleX, scaleY
-local screenHeight = screenHeight
-local screenWidth = screenWidth
-local universalShortcuts = {
-["f10"] = "menu",
--- [" "] = deselect,
-["b"] = "build"
-}
-local selectedShortcuts = {
--- ["a"] = attackMove,
--- ["m"] = move,
-}
-local buildBar = false
 
-local elements = {
-	--MENU
-	{
-		name = "menu",
-		shortcut = "f10",
-		text = "menu",
-		textColor = blue,
-		fill = true,
-		showing = true,
-		x = screenWidth -62,
-		y = screenHeight - 45,
-		overColor = grey,
-		clickColor = black,
-		width  = 60,
-		height = 25,
-		onClicked = "toggleGroup",
-		parameter = "menu"
-	},{
-		name = "menuBackground",
-		fill = true,
-		color = blue,
-		group = "menu",
-		x = screenWidth - 202, --centered
-		y = screenHeight - 295,
-		width = 200,
-		height = 250,
-	},{
-		name = "close",
-		text = "Close",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 85,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "toggleGroup",
-		parameter = "menu"
-	},{
-		name = "loadGame",
-		text = "Load Game",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 125,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "loadGame",
-		-- onClicked = "toggleGroup",
-		-- parameter = "loadGame"
-	},{
-		name = "saveGame",
-		text = "Same Game",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 165,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "saveGame"
-		-- onClicked = "toggleGroup",
-		-- parameter = "saveGame"
-	},{
-		name = "options",
-		text = "Options",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 205,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "mainMenu",
-	},{
-		name = "quitToDesktop",
-		text = "Exit to Desktop",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 245,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "exitGame",
-	},{
-		name = "mainMenu",
-		text = "Main Menu",
-		group = "menu",
-		textColor = blue,
-		fill = true,
-		x = screenWidth - 190,
-		y = screenHeight - 285,
-		overColor = grey,
-		clickColor = black,
-		width  = 180,
-		height = 30,
-		onClicked = "mainMenu",
-	},
-	-- BUILD BAR
-	{
-		name = "oreMine",
-		image = love.graphics.newImage("images/units/unitPics/resourceBuilding.png"),
-		imageColor = blue,
-		y = screenHeight - 55,
-		x = screenWidth - 300,
-		width = 50,
-		height = 50,
-		onClicked = "buildUnit",
-		parameter = oreMine,
-		color = clear,
-		overColor = over,
-		clickColor = pressed,
-		fill = true,
-		group = "buildBar",
-		showing = true,
-	},{
-		name = "miningTruckFactory",
-		image = love.graphics.newImage("images/units/unitPics/miningTruckFactoryIcon.png"),
-		imageColor = blue,
-		y = screenHeight - 55,
-		x = screenWidth - 355,
-		width = 50,
-		height = 50,
-		onClicked = "buildUnit",
-		parameter = miningTruckFactory,
-		color = clear,
-		overColor = over,
-		clickColor = pressed,
-		fill = true,
-		group = "buildBar",
-		showing = true,
-	},
-	-- CargoSwitching
-	{
-		name = "cargo",
-		shortcut = "",
-		text = "cargo",
-		textColor = blue,
-		fill = true,
-		showing = true,
-		x = 10,
-		y = screenHeight - 45,
-		overColor = grey,
-		clickColor = black,
-		width  = 60,
-		height = 25,
-		onClicked = "toggleGroup",
-		parameter = "cargo"
-	},{
-		name = "metalCargo",
-		group = "cargo",
-		image = love.graphics.newImage("images/gui/metalIcon.png"),
-		imageColor = gray,
-		y = screenHeight - 75,
-		x = 10,
-		color = clear,
-		overColor = over,
-		clickColor = pressed,
-		fill = true,
-		width = 60,
-		height = 30,
-		onClicked = "setSelectionCargo",
-		parameter = "metal",
-	},{
-		name = "oreCargo",
-		group = "cargo",
-		image = love.graphics.newImage("images/gui/oreIcon.png"),
-		imageColor = brown,
-		y = screenHeight - 110,
-		x = 10,
-		color = clear,
-		overColor = over,
-		clickColor = pressed,
-		fill = true,
-		width = 60,
-		height = 30,
-		onClicked = "setSelectionCargo",
-		parameter = "ore",
-	},
+local elements = {};
 
-}
 local inputMap = {
 {349, 83, 349+60, 83+30, "metalIcon"},
 {349, 49, 349+60, 49+30,  "oreIcon"},
 }
-function gui.load()
-	
+function gui.load(which)
+	elements = gui[which];
 	powerImage = love.graphics.newImage("images/gui/uiPower.png")
 	dashboardImage = love.graphics.newImage("images/gui/dashboard.png")
 	instrumentsImage = love.graphics.newImage("images/gui/instruments.png")
@@ -259,10 +43,10 @@ function gui.load()
 	minimapImage = love.graphics.newImage("images/gui/minimap.png")
 	metalIcon = love.graphics.newImage("images/gui/metalIcon.png")
 	oreIcon = love.graphics.newImage("images/gui/oreIcon.png")
-	
+
 	powerX = screenWidth - powerImage:getWidth()
 	powerY = screenHeight - powerImage:getHeight()
-	
+
 	-- gui.resize()
 	clickHandler.addInputMap(inputMap, game)
 end
@@ -307,42 +91,44 @@ function gui.saveGame()
 			file:write("unit:"..currentPlanet.units[i].unitClass.."\r\n")
 		end
 	end
-	
+
 	for i=1, #currentPlanet.units do
 		local str = currentPlanet.units[i]:pack()
 		file:write("update:"..str.."\r\n")
 	end
-	
+
 	file:close()
 end
 
 function gui.loadGame()
 	local file = love.filesystem.newFile("save.txt")
 	file:open("r")
-	for i=#currentPlanet.units, 1, -1 do
-		currentPlanet.units[i]:endDeath()
+	if (currentPlanet) then
+		for i=#currentPlanet.units, 1, -1 do
+			currentPlanet.units[i]:endDeath()
+		end
 	end
 	local currentUnit = 1
 	for line in file:lines() do --supposedly this closes the file (in the defualt lua implemntation at least)
-		
+
 		local point = string.find(line, ":")
 		local thing = string.sub(line, 1, point)
 		local data = string.sub(line, point, -1)
-		print(data)
+		--print(data)
 		if thing == "seed:" then
-			print("seed: '"..data.."'")
+			--print("seed: '"..data.."'")
 			scene = game:new("src/scenarios/emptyPlanet", tonumber(string.sub(data, 2, -1)))
 		elseif thing == "unit:" then
 			local object = {}
 			local unitClass = string.sub(data, 2, -1)
-			print(unitClass)
+			--print(unitClass)
 			_G[unitClass]:new(currentPlanet, 0, 0, teams[1])
 		elseif thing == "update:" then
-			
+
 			currentPlanet.units[currentUnit]:unpack(data)
 			currentUnit = currentUnit + 1
 		end
-		
+
 	end
 end
 
@@ -377,8 +163,7 @@ local function callback()
 	buildingPlaceable = false
 end
 
-function gui.mouseMoved()
-	local mx, my = mx, my
+function gui.mouseMoved(mx, my)
 	if building then
 		local dx, dy = building.width/2, building.height/2
 		local x, y = worldMX, worldMY
@@ -401,11 +186,11 @@ function gui.mouseMoved()
 		if not((e.x < mx and e.y < my) and ((e.x + e.width) > mx and (e.y + e.height) > my)) then --mouse is not over this element
 			e.mouseOver = false
 			overElement = false
-		end		
+		end
 	else
 		for i=1, #elements do
 			local e = elements[i]
-			if (e.showing and e.onClicked) and ((e.x < mx and e.y < my) and ((e.x + e.width) > mx and (e.y + e.height) > my)) then -- mouse is over this element
+			if (e.showing and (e.onClicked or e.overColor)) and ((e.x < mx and e.y < my) and ((e.x + e.width) > mx and (e.y + e.height) > my)) then -- mouse is over this element
 				overElement = e
 				e.mouseOver = true
 			end
@@ -417,8 +202,8 @@ function gui.updateSelection(selection)
 	if selection[1] then
 		if selection[1].cargoTruck then -- show cargo options
 			gui.showGroup("cargo")
-		elseif selection[1].weapons[1] then --show attack ai options
-			
+		--elseif selection[1].weapons[1] then --show attack ai options
+
 		end
 	else
 		gui.hideGroup("cargo")
@@ -426,7 +211,7 @@ function gui.updateSelection(selection)
 end
 
 function gui.mousepressed(mx, my, button)
-	if not (button == "l") then return end
+	if not (button == 1) then return end
 	if building then
 		if buildingPlaceable then
 			if building.resourceProducer and oreNode then
@@ -443,7 +228,7 @@ function gui.mousepressed(mx, my, button)
 	end
 	for i=1, #elements do
 		local e = elements[i]
-		if (e.onClicked and e.showing) and ((e.x < mx and e.y < my) and (e.x + e.width > mx and e.y + e.height > my)) then -- clicked on this element
+		if ((e.onClicked or e.textBox) and e.showing) and ((e.x < mx and e.y < my) and (e.x + e.width > mx and e.y + e.height > my)) then -- clicked on this element
 			e.down = true
 			pressedElement = e
 			return true
@@ -452,28 +237,54 @@ function gui.mousepressed(mx, my, button)
 	return false
 end
 function gui.mousereleased(mx, my, button)
-	if not button == "l" then return end
+	if not button == 1 then return end
 	local e = pressedElement
 	if e then
 		if (e.x < mx and e.y < my) and (e.x + e.width > mx and e.y + e.height > my) then -- clicked on this element
 			e.down = false
-			gui[e.onClicked](e.parameter)
+			if e.textBox then
+				print("selected textBox")
+				gui.textBox = e;
+				gui.text = "Type stuff"
+			else
+				e.onClicked();
+			end
 		else
 			e.down = false
+			gui.textBox = false
 			pressedElement = false
 		end
 	end
 end
 
-function gui.keypressed(key) 
+function gui.keypressed(key)
+	if gui.textBox then
+		if key == "return" then
+			gui.textBox.onFinished(gui.text);
+			gui.text = false
+			gui.textBox = false
+		elseif key == "backspace" then
+			local byteoffset = utf8.offset(gui.text, -1)
+      if byteoffset then
+          -- remove the last UTF-8 character.
+          -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
+          gui.text = string.sub(gui.text, 1, byteoffset - 1)
+      end
+		end
+		return true;
+	end
 	if key == " " then building = false end
+end
+
+function gui.textinput(t)
+	if gui.textBox then gui.text = gui.text..t end
 end
 
 function gui.drawBuilding() --draw a building silohette where we are going to build it
 	if buildingPlaceable then
-		love.graphics.setColor(goodBuildingPlacement) 
+		love.graphics.setColor(colors.goodBuildingPlacement)
 	else
-		love.graphics.setColor(badBuildingPlacement)
+		love.graphics.setColor(colors.badBuildingPlacement)
 	end
 	if building.resourceProducer and oreNodePos then
 		love.graphics.push()
@@ -494,7 +305,7 @@ function gui.draw()
 	if player then -- player control mode
 		love.graphics.translate(500, screenHeight -180)
 		love.graphics.draw(dashboardImage)
-		
+
 		love.graphics.setColor(blue)
 		love.graphics.rectangle('fill', shieldPower[1], shieldPower[2], powerBarLength, powerBarHeight * player.shieldPowerPercent)
 		love.graphics.rectangle('fill', enginePower[1], enginePower[2], powerBarLength, powerBarHeight * player.enginePowerPercent)
@@ -515,7 +326,7 @@ function gui.draw()
 		love.graphics.setColor(white)
 		love.graphics.draw(instrumentsImage)
 		love.graphics.draw(arrowImage, arrow[1], arrow[2], player.body:getAngle(),1,1,100,100)
-		--love.graphics.draw(guiImages.minimap, 
+		--love.graphics.draw(guiImages.minimap,
 	else --rts control mode
 		if building then
 			gui.drawBuilding()
@@ -524,7 +335,7 @@ function gui.draw()
 			local e = elements[i]
 			if e.showing then
 				if e.image then
-					if e.imageColor then love.graphics.setColor(e.imageColor) else love.graphics.setColor(white) end
+					if e.imageColor then love.graphics.setColor(e.imageColor) else love.graphics.setColor(colors.white) end
 					love.graphics.draw(e.image, e.x, e.y)
 				end
 				if (e.clickColor and e.down) then
@@ -532,20 +343,32 @@ function gui.draw()
 				elseif (e.overColor and e.mouseOver) then
 					love.graphics.setColor(e.overColor)
 				else
-					love.graphics.setColor(e.color or white)
+					love.graphics.setColor(e.color or colors.white)
 				end
-				
+
 				if e.fill then
 					love.graphics.rectangle("fill", e.x, e.y, e.width, e.height)
+				elseif e.outline then
+					love.graphics.rectangle("line", e.x, e.y, e.width, e.height)
 				end
-				if e.text then
+				if e.text or e.list then
 					if e.textColor then love.graphics.setColor(e.textColor) end
-					love.graphics.printf(e.text, e.x, e.y, e.width, "center")
+					if (e.list) then
+						for item=1, #e.list do
+							love.graphics.printf(e.list[item], e.x, e.y + (e.spacing * item), e.width, "center");
+						end
+					else
+						love.graphics.printf(e.text, e.x, e.y, e.width, "center")
+					end
 				end
-				
+
 			end
 		end
+		if gui.textBox then
+			love.graphics.setColor(gui.textBox.textColor)
+			love.graphics.printf(gui.text, gui.textBox.x, gui.textBox.y, gui.textBox.width)
+		end
 	end
-	love.graphics.setColor(white)
+	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.pop()
 end

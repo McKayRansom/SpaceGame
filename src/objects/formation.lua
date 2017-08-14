@@ -116,7 +116,7 @@ function lineFormation:moveTo(mx, my, angle, isAttackMove)
 		elseif self.units[i].dead or self.units[i].body:isDestroyed() then
 			table.remove(self.units, i)
 		end
-	end	 
+	end
 	--move self.units to line
 	local sumX, sumY = 0,0
 	for i=1, #self.units do
@@ -158,13 +158,13 @@ function lineFormation:goTo(x, y, angle, isAttackMove, targetAngle)
 	if backwards then
 		-- spacingConstant = spacingConstant * -1
 	end
-	
+
 	--sort units so they are in order
 	local distances = {}
 	local objects = {}
 	for i=1, #self.units do
 		local distance, _y = utils.getRelativeCoords(x, y, self.units[i].body:getX(), self.units[i].body:getY(), angle)
-		print("addingDistance: "..distance)
+		--print("addingDistance: "..distance)
 		local added = false
 		for j=1, #distances do
 			if distances[j] < distance then
@@ -179,10 +179,10 @@ function lineFormation:goTo(x, y, angle, isAttackMove, targetAngle)
 			table.insert(objects, self.units[i])
 		end
 	end
-	print("formationMovingTo: "..math.deg(angle))
-	for i=1, #objects do
-		print("movingUnit: "..tostring(objects[i]).." distance: "..distances[i])
-	end
+	--print("formationMovingTo: "..math.deg(angle))
+	-- for i=1, #objects do
+	-- 	print("movingUnit: "..tostring(objects[i]).." distance: "..distances[i])
+	-- end
 	-- if angle < 0 then
 		-- spacingConstant = spacingConstant * -1
 	-- end
@@ -212,10 +212,3 @@ function lineFormation:merge(finalFormation)
 	end
 	utils.removeFromTable(formations, self)
 end
-
-
-
-
-
-
-
