@@ -14,12 +14,13 @@ effect = {}
 	-- return #activeEffects
 -- end
 
-function effect.new(ship, posX, posY, sprite, linger, loop, a)
+function effect.new(ship, posX, posY, sprite, linger, loop, a, engineEffect)
 	local object = {}
 	assert(sprite, "no sprite for a new effect")
 	object.sprite = sprite
 	object.frame = 1
 	object.dt = 0
+	object.engineEffect = engineEffect
 	if ship.body then -- this is a ship
 		local dx = ship.body:getX()-posX
 		local dy = ship.body:getY()-posY

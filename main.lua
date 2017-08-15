@@ -13,7 +13,7 @@ function love.load()
 
 	--implement ship selection for each scene
 
-	scene = game:new("src/scenarios/holdTheLine", 8888)
+	scene = game:new("src/scenarios/testScenario", 8888)
 
 end
 

@@ -16,6 +16,7 @@ local requireList = {
 "src/units/rocketTruck",
 "src/units/ammoTruck",
 "src/units/miningTruck",
+"src/units/shuttle",
 "src/units/buildings",
 "src/units/lightCruiser",
 "src/units/heavyCruiser",

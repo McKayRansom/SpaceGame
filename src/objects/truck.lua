@@ -10,7 +10,7 @@ function truck:new(planet, x, y, team, angle, vx, vy)
 	self.body:setLinearDamping(0.2) -- friction, yay
 	self.steering = 0
 	table.insert(planet.groundUnits, self)
-	self.updateTime = math.random()*.25 --randomize update times so they don't all do updates of pathfinding and such at the same time
+	
 	self.targets = {}
 	self.moveQue = {}
 	if self.trailer then
@@ -123,23 +123,7 @@ function truck:updateSelf(dt)
 	self.steering = 0
 	--THIS IS SUPER BAD ON PERFORMANCE :( Multithreading? also add target prorities at some point...
 
-	self.updateTime = self.updateTime + dt
-	if self.updateTime > .25 then
-		self.updateTime = 0
-		if self.weapons[1] then
-			self:updateTargets(sx, sy)
-		end
-		if self.moveQue[1] then
-			self:updatePathfinding(sx, sy, sa, vel)
-		end
-		if self.cargoTruck then
-		self.checkTime = self.checkTime + 1
-		if self.checkTime > 2 then
-			self:updateCargo(.5)
-			self.checkTime = 0
-		end
-	end
-	end
+	
 
 	if self.brake and vel > .1 then
 		local force = self.brakingForce *.33--* self.enginePowerPercent * (self.engineHealth/self.engineMaxHealth)

@@ -139,7 +139,7 @@ function spaceShip:drawSelf()
 
 end
 
-function spaceShip:updateSelf(dt)
+function spaceShip:updateSelf(dt) --TODO: Split all of this up like in truck.lua, have it called periodically by unit.lua's update function
 	
 	
 	local sx, sy = self.body:getPosition()

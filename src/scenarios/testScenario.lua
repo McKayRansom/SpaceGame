@@ -30,6 +30,7 @@ color = {225, 0, 0}
 teams = {good, bad}
 local timer = false
 
+shuttle:new(currentPlanet, 0, 1900, good, 0, 0, 0)
 heavyCruiser:new(currentPlanet, 0, 2000, good, 0,0,0)
 heavyCruiser:new(currentPlanet, -200, 2000, good, 0,0,0)
 heavyCruiser:new(currentPlanet, -400, 2000, good, 0,0,0)

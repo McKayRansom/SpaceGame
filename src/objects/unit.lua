@@ -18,6 +18,7 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 	self.effects = {}
 	self.team = team
 	self.planet = planet
+	self.updateTime = math.random()*.25 --randomize update times so they don't all do updates of pathfinding and such at the same time
 
 	if self.maxShields then
 		self.shieldPower = 0
@@ -56,7 +57,7 @@ function unit:new(planet, x, y, team, angle, vx, vy)
 			local t = self.engineEffects[2][i]
 			local dist = utils.getDistance(t[1], t[2])
 
-			effect.new(self, -math.sin(angle) * dist + x, math.cos(angle) * dist + y, self.engineEffects[1], false, true, 0)
+			effect.new(self, -math.sin(angle) * dist + x, math.cos(angle) * dist + y, self.engineEffects[1], false, true, 0, true)
 		end
 	end
 
@@ -162,10 +163,12 @@ function unit:draw()
 	love.graphics.setColor(255, 255, 255,255)
 	for i=1, #self.effects do
 		local effect = self.effects[i]
-		effect.sprite:start(effect.frame)
-		assert(effect.frame <= effect.sprite.numRows, "too many effect frames:"..effect.frame.."is not"..effect.sprite.numRows)
-		if effect.deathAnim then love.graphics.setColor(self.team.color) else 	love.graphics.setColor(255, 255, 255,255) end --death sprite is teamcolor, weapon impact sprites aren't
-		effect.sprite:draw(effect[x], effect[y], effect.angle)
+		if not (effect.engineEffect and (self.engineHealth <= 5)) then
+			effect.sprite:start(effect.frame)
+			assert(effect.frame <= effect.sprite.numRows, "too many effect frames:"..effect.frame.."is not"..effect.sprite.numRows)
+			if effect.deathAnim then love.graphics.setColor(self.team.color) else 	love.graphics.setColor(255, 255, 255,255) end --death sprite is teamcolor, weapon impact sprites aren't
+			effect.sprite:draw(effect[x], effect[y], effect.angle)
+		end
 	end
 	if self.drawSelf then self:drawSelf() end
 
@@ -314,6 +317,25 @@ function unit:update(dt)
 	for i=1, #self.weapons do
 		if self.weapons[i].customUpdate then self.weapons[i]:customUpdate(dt) end
 	end
+	
+	self.updateTime = self.updateTime + dt
+	if self.updateTime > .25 then
+		self.updateTime = 0
+		if self.weapons[1] and self.updateTargets then
+			self:updateTargets(sx, sy)
+		end
+		if self.moveQue[1] and self.updatePathfinding then
+			self:updatePathfinding(sx, sy, sa, vel)
+		end
+		if self.cargoTruck then
+			self.checkTime = self.checkTime + 1
+			if self.checkTime > 2 then
+				self:updateCargo(.5)
+				self.checkTime = 0
+			end
+		end
+	end
+	
 	if self.updateSelf then self:updateSelf(dt) end
 end
 
