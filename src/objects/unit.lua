@@ -321,6 +321,7 @@ function unit:update(dt)
 	self.updateTime = self.updateTime + dt
 	if self.updateTime > .25 then
 		self.updateTime = 0
+		local sx, sy = self.body:getPosition();
 		if self.weapons[1] and self.updateTargets then
 			self:updateTargets(sx, sy)
 		end
